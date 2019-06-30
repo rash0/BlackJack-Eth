@@ -1,18 +1,29 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <HouseHand :cardList="fullCardDeck" />
+    <UserHand :msg="cardList"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import HouseHand from './components/HouseHand.vue'
+import UserHand from './components/UserHand.vue'
+
 
 export default {
   name: 'app',
+  data() {
+    return {
+    }
+  },
+  computed: {
+    fullCardDeck(){
+      return this.$store.getters.fullCardDeck
+    }
+  },
   components: {
-    HelloWorld
-  }
+    HouseHand, UserHand
+  },
 }
 </script>
 
@@ -23,6 +34,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  display: flex;
+  flex-direction: column
+  /* margin-top: 60px; */
 }
 </style>
