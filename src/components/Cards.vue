@@ -29,6 +29,7 @@ export default {
   padding: 15px;
   margin-left: 5px;
   margin-right: 5px;
+  position: relative;
 }
 .card div {
   width:100%;

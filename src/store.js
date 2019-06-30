@@ -26,8 +26,16 @@ export default new Vuex.Store({
     ]
   },
   getters: {
+    // selectCard(state, getters) {
+    //   var rand = Math.floor(Math.random() * 51) + 1
+    //   var deck = getters.fullCardDeck
+    //   console.log(deck[rand])
+    //   return deck[rand]
+    // },
     fullCardDeck(state){
+      // Create a deck
       const deck = []
+      
       for (let card in state.cards) {
         for (let type in state.cardType) {
           let ca = {
@@ -37,6 +45,15 @@ export default new Vuex.Store({
           }
           deck.push(ca);
         }
+      }
+      // Shuffle the deck
+      for (var i = 0; i < 1000; i++) {
+        var location1 = Math.floor((Math.random() * deck.length));
+        var location2 = Math.floor((Math.random() * deck.length));
+        var tmp = deck[location1];
+    
+        deck[location1] = deck[location2];
+        deck[location2] = tmp;
       }
       return deck;
     }
