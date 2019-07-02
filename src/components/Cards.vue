@@ -1,25 +1,29 @@
 <template>
-  <span class="card" :style="'border: 1px solid ' + changeColor(card.name)">
-    <div class="card-inner">
-      <div class="card-front">
-        <div class="card-head">
-          <h4 :style="'color:' + changeColor(card.name)" >{{card.num}}</h4>
-          <Shapes class="smallShape" :cardName="card.name" size="25px" width="21px" />
-        </div>
-        <div v-if="card.num !== 'A'" class="card-body">
-          <Shapes class="bigShape" :cardName="card.name" size="19px" width="40px"/>
-          <p :style="'color:' + changeColor(card.name)" >{{card.num}}</p>
-          <Shapes class="bigShape" :cardName="card.name" size="19px" width="40px"/>
-        </div>
-        <div v-else class="card-body">
-          <Shapes class="bigShape" :cardName="card.name" style="margin-top: 70px !important;" size="12px" width="100px"/>
+  <div class="flip-card" :style="'border: 1px solid ' + changeColor(card.name)">
+    <div class="flip-card-inner">
+      <div class="flip-card-front">
+        <div class="card" :style="'border: 1px solid ' + changeColor(card.name)">
+          <div class="card-head">
+            <h4 :style="'color:' + changeColor(card.name)" >{{card.num}}</h4>
+            <Shapes class="smallShape" :cardName="card.name" size="25px" width="21px" />
+          </div>
+          <div v-if="card.num !== 'A'" class="card-body">
+            <Shapes class="bigShape" :cardName="card.name" size="19px" width="40px"/>
+            <p :style="'color:' + changeColor(card.name)" >{{card.num}}</p>
+            <Shapes class="bigShape" :cardName="card.name" size="19px" width="40px"/>
+          </div>
+          <div v-else class="card-body">
+            <Shapes class="bigShape" :cardName="card.name" style="margin-top: 70px !important;" size="12px" width="100px"/>
+          </div>
         </div>
       </div>
-      <div class="card-back">
-        <h5>BACKKKKK</h5>
+      <div class="flip-card-back">
+        <div class="card" style="border: 1px solid black">
+          <hr />
+        </div>
       </div>
     </div>
-  </span>
+  </div>
 </template>
 
 <script>
@@ -49,6 +53,47 @@ export default {
 </script>
 
 <style>
+.flip-card {
+  border:none !important;
+  perspective: 1000px; /* Remove this if you don't want the 3D effect */
+}
+
+/* This container is needed to position the front and back side */
+.flip-card-inner {
+  position: relative;
+  width: 9.5rem !important;
+  height: 12rem;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+/* Do an horizontal flip when you move the mouse over the flip box container */
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Position the front and back side */
+.flip-card-front, .flip-card-back {
+  backface-visibility: hidden;
+	position: absolute;
+}
+
+/* Style the back side */
+.flip-card-back {
+  transform: rotateY(180deg);
+}
+
+.flip-card-back .card hr {
+  width: 13.5rem;
+  margin: auto;
+  margin-top: 95px;
+  margin-left: -45px;
+  border-width: .5px;
+  transform: rotate(59deg);
+  border-color: black;
+}
+
 .card {
   font-family: 'Raleway', sans-serif;
   text-rendering: optimizeLegibility !important;
@@ -58,7 +103,6 @@ export default {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border-radius: 7px;
   align-self: center;
-  position: relative;
   display: flex;
   padding: 9px ;
   flex-direction: column;
@@ -66,35 +110,9 @@ export default {
   margin-right: 5px;
   background-color: white;
   transition: all 250ms;
-  perspective: 1000px;
 }
 .card div {
   width: 100%;
-}
-
-.card-inner{
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.8s;
-  transform-style: preserve-3d;
-}
-
-.card:hover .card-inner {
-  transform: rotateY(180deg);
-}
-
-.card-front, .card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-}
-
-.card-back {
-  background-color: dodgerblue;
-  transform: rotateY(180deg);
 }
 
 .card-head h4 {
