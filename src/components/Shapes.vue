@@ -42,7 +42,7 @@ export default {
 .modal-leave,
 .modal-enter-to { opacity: 1 }
 
-.househand{
+.Table-side{
   width: 100%;
   height: 45vh;
   border: 1px solid red;
@@ -50,10 +50,10 @@ export default {
   justify-content: center;
   transition: all 1s ease-in-out;
 }
-.househand div {
+.Table-side div {
   display: flex;
 }
-.househand span:last-child {
+.Table-side span:last-child {
   width: 50px;
   color: #a0aec0;
   font-weight:bolder;

@@ -1,8 +1,6 @@
 <template>
-  <div class="househand" :style="tableState(totalPoints)">
-      <!-- <transition-group name="modal" tag="div"> -->
-        <Cards v-for="card in cardList" :card="card" :key="(card.name + card.num).toString()"/>
-      <!-- </transition-group> -->
+  <div class="Table-side" :style="tableState(totalPoints)">
+    <Cards v-for="(card, index) in cardList" :card="card" :isFliped="false" :key="index"/>
     <span>{{ totalPoints }}</span>
   </div>
 </template>
@@ -12,16 +10,19 @@ import Cards from "./Cards"
 
 export default {
   name: 'Table',
-  props: ['cardList', 'totalPoints'],
+  props: ['cardList', 'totalPoints', 'name'],
   components: {
     Cards
   },
   methods:{
     tableState(points){
-      // TODO //
-      // use switch() instead
+
       if(points === 21) return 'background-color: RGBA(0, 255, 0, 0.2)'
       if(points > 21) return 'background-color: RGBA(255, 0, 0, 0.2)'
+    },
+    isCardFliped(index, n){
+      if(index === 1 && this.name === 'houseSide') return true;
+      return false;
     }
   }
 }
@@ -29,28 +30,20 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/* transition Group style */
-.modal-enter-active,
-.modal-leave-active { transition: opacity 1000ms }
-
-.modal-enter,
-.modal-leave-to { opacity: 0 }
-
-.modal-leave,
-.modal-enter-to { opacity: 1 }
-
-.househand{
+.Table-side{
   width: 100%;
-  height: 45vh;
-  border: 1px solid red;
+  height: 40vh;
   display: flex;
   justify-content: center;
+  align-items: center;
   transition: all 1s ease-in-out;
 }
-.househand div {
+/* .Table-side div {
   display: flex;
-}
-.househand span:last-child {
+} */
+.Table-side span:last-child {
+  position: absolute;
+  left: 10rem;
   width: 50px;
   color: #a0aec0;
   font-weight:bolder;

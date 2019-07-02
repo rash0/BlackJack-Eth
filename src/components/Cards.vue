@@ -1,6 +1,6 @@
 <template>
   <div class="flip-card" :style="'border: 1px solid ' + changeColor(card.name)">
-    <div class="flip-card-inner">
+    <div class="flip-card-inner" :style="isFliped ? 'transform: rotateY(180deg);' : null">
       <div class="flip-card-front">
         <div class="card" :style="'border: 1px solid ' + changeColor(card.name)">
           <div class="card-head">
@@ -31,7 +31,7 @@ import Shapes from './Shapes'
 
 export default {
   name: 'Card',
-  props: ['card'],
+  props: ['card', 'isFliped'],
   components: {
     Shapes
   },
@@ -69,9 +69,9 @@ export default {
 }
 
 /* Do an horizontal flip when you move the mouse over the flip box container */
-.flip-card:hover .flip-card-inner {
+/* .flip-card:hover .flip-card-inner {
   transform: rotateY(180deg);
-}
+} */
 
 /* Position the front and back side */
 .flip-card-front, .flip-card-back {

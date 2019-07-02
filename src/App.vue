@@ -1,18 +1,19 @@
 <template>
   <div id="app">
-    <Table :cardList="houseCards" :totalPoints="houseTotal"/>
-    <Table :cardList="userCards" :totalPoints="userTotal"/>
-    <button @click="dealOneCard">Click me</button>
+    <Table :cardList="houseCards" :name="'houseSide'" :totalPoints="houseTotal"/>
+    <Table :cardList="userCards" :name="'userSide'" :totalPoints="userTotal"/>
+    <Controls :isDisabled="isControlsDisabled" :hitButton="hitButton" :doubleButton="doubleButton" :splitButton="splitButton" :standButton="standButton"/>
   </div>
 </template>
 
 <script>
-import Table from "./components/Table.vue";
+import Table from "./components/Table";
+import Controls from './components/Controls'
 
 export default {
   name: "app",
   components: {
-    Table
+    Table, Controls
   },
   data() {
     return {
@@ -21,6 +22,7 @@ export default {
       userCards: [],
       userTotal: 0,
       fullDeck: [],
+      isControlsDisabled: false
     };
   },
   created() {
@@ -33,9 +35,6 @@ export default {
         if (i % 2 === 0) setTimeout(() => this.houseCards.push(this.fullDeck.pop()), i*700 )
         if (i % 2 !== 0) setTimeout(() => this.userCards.push(this.fullDeck.pop()), i*700 )
       }
-    },
-    dealOneCard() {
-      this.houseCards.push(this.fullDeck.pop());
     },
     getPoints(tableSide, state) {
       var points = 0
@@ -52,6 +51,15 @@ export default {
       :
         this.userTotal = points
     },
+    // Controlls Buttons
+    hitButton(){
+      this.userCards.push(this.fullDeck.pop());
+    },
+    doubleButton(){},
+    splitButton(){},
+    standButton(){
+      this.isControlsDisabled = true
+    }
   },
   watch: {
     houseCards(state){
@@ -60,6 +68,12 @@ export default {
     userCards(state){
       this.getPoints('userTotal', state)
     },
+    houseTotal(state){
+      if(state >= 21) this.standButton()
+    },
+    userTotal(state){
+      if(state >= 21) this.standButton()
+    }
 
   }
 };
@@ -76,7 +90,6 @@ export default {
   color: #2c3e50;
   display: flex;
   flex-direction: column;
-  padding: 30px;
   /* margin-top: 60px; */
 }
 </style>
