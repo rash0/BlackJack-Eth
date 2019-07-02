@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -9,19 +8,15 @@ export default new Vuex.Store({
     cardType:[
       {
         name: 'spade',
-        img: require('./assets/spade.svg')
       },
       {
         name: 'diamond',
-        img: require('./assets/diamond.svg')
       },
       {
         name: 'heart',
-        img: require('./assets/heart.svg')
       },
       {
-        name: 'clover',
-        img: require('./assets/clover.svg')
+        name: 'clove',
       }
     ]
   },
