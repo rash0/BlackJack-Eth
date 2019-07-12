@@ -1,86 +1,81 @@
 <template>
   <div id="app">
-    <Table :cardList="houseCards" :name="'houseSide'" :totalPoints="houseTotal"/>
-    <Table :cardList="userCards" :name="'userSide'" :totalPoints="userTotal"/>
-    <Controls :isDisabled="isControlsDisabled" :hitButton="hitButton" :doubleButton="doubleButton" :splitButton="splitButton" :standButton="standButton"/>
+    <Table :cardList="houseCards" :name="'houseSide'" />
+    <Table :cardList="userCards" :name="'userSide'" />
+    <Controls v-if="this.gameState === 'playing'"/>
+    <button class="btn" @click="newRound" v-if="this.gameState === 'finished'">New Bet ?</button>
   </div>
 </template>
 
 <script>
 import Table from "./components/Table";
-import Controls from './components/Controls'
+import Controls from "./components/Controls";
+import { mapGetters, mapState } from "vuex";
+import getWeb3 from "./helper";
+// import abi from './abi.json'
+import web3 from "web3";
 
 export default {
   name: "app",
   components: {
-    Table, Controls
+    Table,
+    Controls
   },
   data() {
     return {
-      houseCards: [],
-      houseTotal: 0,
-      userCards: [],
-      userTotal: 0,
-      fullDeck: [],
-      isControlsDisabled: false
+      provider: null,
+      account: null
     };
   },
-  created() {
-    this.distrubateCard();
+  // created: async function() {
+  //   try {
+  //     web3 = await getWeb3()
+  //     var account = web3.eth.accounts[0]
+  //     await console.log(web3.version)
+  //     var HelloContract = await web3.eth.contract(abi,account);
+  //     var ff = await HelloContract.at("0x120783B1cD2595C7b6Cd2c5c860247A07ce85D23")
+  //     await ff.getMessage((err, result) => {
+  //       if(!err){
+  //         console.log(result)
+  //       }
+  //     })
+  //   } catch (error) {
+  //     console.log("Smth went wrong:\n", error);
+  //   }
+  // },
+  beforeMount() {
+    this.$store.dispatch("startTheGame");
+  },
+  computed: {
+    ...mapState({
+      houseCards: "houseCards",
+      userCards: "userCards",
+      gameState: "gameState",
+      // housePoints: "housePoints",
+      // userPoints: "userPoints",
+      isControlsDisabled: "isControlsDisabled"
+    }),
+    // TODO //
+    // Adjust timing, so not to start immeditaly after the game results
+    setModalState() {
+      if (this.gameState === "finished") {
+        // this.getBalance();
+        return "modal on";
+      } else {
+        return "modal";
+      }
+    }
   },
   methods: {
-    distrubateCard() {
-      this.fullDeck = this.$store.getters.fullCardDeck;
-      for (var i = 0; i < 4; i++) {
-        if (i % 2 === 0) setTimeout(() => this.houseCards.push(this.fullDeck.pop()), i*700 )
-        if (i % 2 !== 0) setTimeout(() => this.userCards.push(this.fullDeck.pop()), i*700 )
-      }
-    },
-    getPoints(tableSide, state) {
-      var points = 0
-      for (let card in state){
-        if(['J','Q', 'K', 'A'].indexOf(state[card].num) !== -1){
-          points += 10
-        }else{
-          points += state[card].num
-        }
-      }
-      // Add the card point to the designated state
-      tableSide === 'houseTotal'? 
-        this.houseTotal = points
-      :
-        this.userTotal = points
-    },
-    // Controlls Buttons
-    hitButton(){
-      this.userCards.push(this.fullDeck.pop());
-    },
-    doubleButton(){},
-    splitButton(){},
-    standButton(){
-      this.isControlsDisabled = true
+    newRound() {
+      this.$store.dispatch("newRound");
     }
-  },
-  watch: {
-    houseCards(state){
-      this.getPoints('houseTotal', state)
-    },
-    userCards(state){
-      this.getPoints('userTotal', state)
-    },
-    houseTotal(state){
-      if(state >= 21) this.standButton()
-    },
-    userTotal(state){
-      if(state >= 21) this.standButton()
-    }
-
   }
 };
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css?family=Raleway:100&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Raleway:100&display=swap");
 
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
@@ -91,5 +86,22 @@ export default {
   display: flex;
   flex-direction: column;
   /* margin-top: 60px; */
+}
+
+.btn {
+  background-color: white;
+  border: 1px solid grey;
+  width: 5rem;
+  margin: 0.4rem;
+  border-radius: 10px;
+  padding: 0.4rem;
+  cursor: pointer;
+  align-self: center;
+}
+
+.btn:hover {
+  background: blue;
+  color: white;
+  font-weight: 700;
 }
 </style>

@@ -1,15 +1,16 @@
 <template>
-  <div class="flip-card" :style="'border: 1px solid ' + changeColor(card.name)">
-    <div class="flip-card-inner" :style="isFliped ? 'transform: rotateY(180deg);' : null">
+<!-- TODO add more card animation in and out -->
+  <div class="flip-card">
+    <div class="flip-card-inner" :style="isFliped ? 'transform: rotateY(180deg)' : null">
       <div class="flip-card-front">
-        <div class="card" :style="'border: 1px solid ' + changeColor(card.name)">
+        <div class="card" :style="!isFliped ? 'border: 1px solid ' + changeColor(card.name) : 'transform: scale(.1);'">
           <div class="card-head">
-            <h4 :style="'color:' + changeColor(card.name)" >{{card.num}}</h4>
+            <h4>{{card.num}}</h4>
             <Shapes class="smallShape" :cardName="card.name" size="25px" width="21px" />
           </div>
           <div v-if="card.num !== 'A'" class="card-body">
             <Shapes class="bigShape" :cardName="card.name" size="19px" width="40px"/>
-            <p :style="'color:' + changeColor(card.name)" >{{card.num}}</p>
+            <p>{{card.num}}</p>
             <Shapes class="bigShape" :cardName="card.name" size="19px" width="40px"/>
           </div>
           <div v-else class="card-body">
@@ -35,17 +36,39 @@ export default {
   components: {
     Shapes
   },
+  computed: {
+    cardBorder(cardName){
+      `border: 1px solid ' + ${this.changeColor(cardName)}`
+    }
+  },
   methods:{
     changeColor(type){
       switch(type){
         case 'spade':
+        case 'clove':
           return  "black;"
+          break;
         case 'diamond':
-          return "red;"
         case 'heart':
           return "red;"
-        case 'clove':
-          return "black;"
+          break;
+      }
+    },
+    rotateCard(){
+      const rand = Math.floor(Math.random() * (5 - 1) + 1)
+      switch(rand){
+        case 1:
+          return 'transform: rotateZ(5deg);'
+          break;
+        case 2:
+          return 'transform: rotateZ(18deg);'
+          break;
+        case 3:
+          return 'transform: rotateZ(-25deg);'
+          break;
+        case 4:
+          return 'transform: rotateZ(-17deg);'
+          break;
       }
     }
   }
@@ -54,6 +77,8 @@ export default {
 
 <style>
 .flip-card {
+  float: left;
+  transition: all 1s;
   border:none !important;
   perspective: 1000px; /* Remove this if you don't want the 3D effect */
 }
@@ -61,7 +86,7 @@ export default {
 /* This container is needed to position the front and back side */
 .flip-card-inner {
   position: relative;
-  width: 9.5rem !important;
+  width: 6.5rem !important;
   height: 12rem;
   text-align: center;
   transition: transform 0.8s;
@@ -81,9 +106,9 @@ export default {
 
 /* Style the back side */
 .flip-card-back {
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) rotate(-7deg);
 }
-
+/* Card back design */
 .flip-card-back .card hr {
   width: 13.5rem;
   margin: auto;
@@ -97,19 +122,21 @@ export default {
 .card {
   font-family: 'Raleway', sans-serif;
   text-rendering: optimizeLegibility !important;
-  color: black;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  /* color: black; */
   width: 7.5rem !important;
   height: 12rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border-radius: 7px;
-  align-self: center;
-  display: flex;
+  border-radius: 10px;
+  /* display: inline-block; */
+  /* align-self: center; */
+  /* display: flex; */
   padding: 9px ;
-  flex-direction: column;
+  /* flex-direction: column; */
   margin-left: 5px ;
   margin-right: 5px;
   background-color: white;
   transition: all 250ms;
+  transform: scale(.7)
 }
 .card div {
   width: 100%;
@@ -121,7 +148,6 @@ export default {
   font-size: 18px;
   font-weight: 600;
   font-style: normal;
-
 }
 .card-head .smallShape {
   margin-top:5px;

@@ -10,7 +10,21 @@
 <script>
 export default {
   name: "Controls",
-  props: ["doubleButton", "splitButton", "standButton", "hitButton", "isDisabled"]
+  computed: {
+    isDisabled(){
+      return this.$store.state.isControlsDisabled
+    }
+  },
+  methods:{
+    hitButton(){
+      this.$store.commit('userNewCard')
+    },
+    doubleButton(){},
+    splitButton(){},
+    standButton(){
+      this.$store.dispatch('houseTurn')
+    }
+  }
 };
 </script>
 
