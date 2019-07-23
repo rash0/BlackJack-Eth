@@ -18,14 +18,6 @@ export default {
   components: {
     Heart, Diamond,
     Clove
-  },
-  methods:{
-    tableState(points){
-      // TODO //
-      // use switch() instead
-      if(points === 21) return 'background-color: RGBA(0, 255, 0, 0.2)'
-      if(points > 21) return 'background-color: RGBA(255, 0, 0, 0.2)'
-    }
   }
 }
 </script>

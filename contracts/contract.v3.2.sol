@@ -1,7 +1,35 @@
 pragma solidity >= 0.5.0;
 
 contract BlackJack {
-    
+    //     const msgParams = JSON.stringify({
+    //   types: {
+    //     EIP712Domain: [
+    //       { name: "name", type: "string" },
+    //       { name: "version", type: "string" },
+    //       { name: "chainId", type: "uint256" },
+    //       { name: "verifyingContract", type: "address" }
+    //     ],
+    //     Game: [
+    //       { name: "House_Address", type: "address" },
+    //       { name: "Player_Address", type: "address" },
+    //       { name: "Escrow_in_ETH", type: "uint256" },
+    //       { name: "Round_bet_Amount", type: "string" },
+    //     ]
+    //   },
+    //   primaryType: "Game",
+    //   domain: {
+    //     name: "ELJoker",
+    //     version: "1",
+    //     chainId: '1',
+    //     verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+    //   },
+    //   message: {
+    //     House_Address:"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
+    //     Player_Address: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+    //     Escrow_in_ETH: 50,
+    //     Round_bet_Amount: 1
+    //   }
+    // });
     struct Round{
         uint housePoints;
         uint playerPoints;
@@ -16,11 +44,17 @@ contract BlackJack {
     
     mapping(address => Game) gameStruct;
     
-    address payable houseAddress;
-    address payable playerAddress;
-    
+    address payable public houseAddress;
+    address payable public playerAddress;
+    bool public shutDownGame;
+
     modifier isHouse(){
         require(msg.sender == houseAddress, "sorry! you are not the house!");
+        _;
+    }
+
+    modifier noAmount(){
+        require(msg.value != 0, "Sorry, the eth amount is too low!");
         _;
     }
     
@@ -28,8 +62,8 @@ contract BlackJack {
         houseAddress = msg.sender;
     }
     
-    function setPlayerBet() public payable {
-        require(msg.value != 0, "Sorry, the eth amount is too low!");
+    function setPlayerBet() public noAmount payable {
+        require(!shutDownGame, "Game is Closed!");
         playerAddress = msg.sender;
         gameStruct[playerAddress].playerBetAmount = msg.value;
     }
@@ -68,21 +102,8 @@ contract BlackJack {
             playerAddress.transfer(address(this).balance - left);
         }
     }
-    
-    // contract Settings
-    function getContractBalance() public isHouse view returns(uint){
-        return address(this).balance;
-    }
-    
-    function topUpContract() public isHouse payable returns (bool) {
-        // top up the contract balance
-    }
-    
-    // withdraw ALL Contract eth to house account
-    function transferAllToHouse() public isHouse payable returns(bool){
-        houseAddress.transfer(address(this).balance);
-    }
-    
+
+    // VIEW FUNCATIONS //
     function getSpecificPlayer(address _addressToSearch, uint _roundNumber) public isHouse view returns(uint, uint, uint, uint){
         return (
             gameStruct[_addressToSearch].playerBetAmount,
@@ -92,12 +113,30 @@ contract BlackJack {
         );
     }
     
+    // CONTRACT SETTINGS //
+    function getContractBalance() public isHouse view returns(uint){
+        return address(this).balance;
+    }
+
+    // top up the contract balance
+    function topUpContract() public isHouse noAmount payable returns (bool){}
+    
+    // in case of shutdown, dont accept registering new players,
+    // and wait tell everyone finishes their game
+    function shutDownBusines() public isHouse returns(bool){
+        shutDownGame = true;
+    }
+    // withdraw ALL Contract eth to house account
+    function transferAllToHouse() public isHouse payable returns(bool){
+        houseAddress.transfer(address(this).balance);
+    }
+    
     // Change Contract ownership
     function setHouseOwner(address payable _tempHouse) public isHouse returns(bool){
         houseAddress = _tempHouse;
     }
     
-    // Helper Functions
+    // HELPER FUNCTIONS //
     function _indexOf(uint[] memory arr, uint value) internal pure returns (uint){
         
         uint tmp = 0;

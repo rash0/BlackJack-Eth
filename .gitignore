@@ -1,8 +1,12 @@
 .DS_Store
 node_modules
 /dist
+src/assets
+server.js
+*.drawio
 
 # local env files
+.env
 .env.local
 .env.*.local
 
@@ -19,3 +23,7 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+# config files
+*config.js
+*.md

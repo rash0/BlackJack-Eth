@@ -1,6 +1,6 @@
 <template>
   <div class="controls" >
-    <button :disabled="isDisabled" @click="doubleButton">Double Down</button>
+    <button :disabled="isDisabled" @click="doubleButton">Double</button>
     <button :disabled="isDisabled" @click="splitButton">Split</button>
     <button :disabled="isDisabled" @click="standButton">Stand</button>
     <button :disabled="isDisabled" @click="hitButton">Hit</button>
@@ -17,7 +17,7 @@ export default {
   },
   methods:{
     hitButton(){
-      this.$store.commit('userNewCard')
+      this.$store.dispatch('withdrawCard')
     },
     doubleButton(){},
     splitButton(){},
@@ -35,22 +35,25 @@ export default {
 }
 .controls button {
   background-color: white;
-  border: 1px solid grey;
-  width: 5rem;
+  border: .7px solid #cbd5e0;
+  min-width: 7rem;
+  height: 1.7rem;
   margin: 0.4rem;
-  border-radius: 10px;
-  padding: 0.4rem;
+  border-radius: 15px;
   cursor: pointer;
+  outline: none;
 }
 
 .controls button:hover {
-  background: blue;
-  color: white;
+  background: #e9d8fd;
+  border: none;
+  color: #2a4365;
   font-weight: 700;
 }
 .controls button[disabled]:hover{
     background: none;
     color:grey;
+    border: .7px solid #cbd5e0;
     font-weight: normal;
 }
 </style>

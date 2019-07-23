@@ -1,70 +1,73 @@
 <template>
   <div id="app">
+    <HeadBar />
     <Table :cardList="houseCards" :name="'houseSide'" />
     <Table :cardList="userCards" :name="'userSide'" />
-    <Controls v-if="this.gameState === 'playing'"/>
-    <button class="btn" @click="newRound" v-if="this.gameState === 'finished'">New Bet ?</button>
+    <Controls v-if="this.gameState === 'playing'" />
+    <div class="escrow">
+      <div class="chip">
+        <div>
+          0.1
+          <span>ETH</span>
+        </div>
+      </div>
+    </div>
+    <!-- TODO -->
+    <!-- This button glows green slowely but beauful, it make you awant to press on -->
+    <input class="btn" @click="newRound" v-if="this.gameState === 'finished'" v-model="betAmount" />
+    <ConfigSteps />
   </div>
 </template>
 
 <script>
 import Table from "./components/Table";
 import Controls from "./components/Controls";
+import HeadBar from "./components/HeadBar";
 import { mapGetters, mapState } from "vuex";
-import getWeb3 from "./helper";
-// import abi from './abi.json'
-import web3 from "web3";
+import getWeb3 from "./helper.js";
+import EthCrypto from "eth-crypto";
+import sigUtil from "eth-sig-util";
+import Eth from "ethjs";
+import ConfigSteps from "./components/ConfigSteps";
+
+import "./global.css";
+
+import { signMessage, verifyMessage, getAccountBalance } from "./helper.js";
 
 export default {
   name: "app",
   components: {
-    Table,
-    Controls
+    Table,Controls,HeadBar, ConfigSteps
   },
   data() {
     return {
       provider: null,
-      account: null
+      account: null,
+      betAmount: 0
     };
   },
-  // created: async function() {
-  //   try {
-  //     web3 = await getWeb3()
-  //     var account = web3.eth.accounts[0]
-  //     await console.log(web3.version)
-  //     var HelloContract = await web3.eth.contract(abi,account);
-  //     var ff = await HelloContract.at("0x120783B1cD2595C7b6Cd2c5c860247A07ce85D23")
-  //     await ff.getMessage((err, result) => {
-  //       if(!err){
-  //         console.log(result)
-  //       }
-  //     })
-  //   } catch (error) {
-  //     console.log("Smth went wrong:\n", error);
-  //   }
+  beforeCreate() {},
+  // created: async () => {
+  // const web3 = await getWeb3();
+  // const signature = await signMessage(web3)
+  // const recoveredAddress = await verifyMessage(signature)
+  // const netId = await web3.version.network;
+
+  // console.log(recoveredAddress)
+
   // },
-  beforeMount() {
-    this.$store.dispatch("startTheGame");
+  created() {
+    if (this.$store.state.houseCards.length === 0) {
+      // this.$store.dispatch("startTheGame");)
+    }
   },
   computed: {
     ...mapState({
       houseCards: "houseCards",
       userCards: "userCards",
       gameState: "gameState",
-      // housePoints: "housePoints",
-      // userPoints: "userPoints",
       isControlsDisabled: "isControlsDisabled"
-    }),
-    // TODO //
-    // Adjust timing, so not to start immeditaly after the game results
-    setModalState() {
-      if (this.gameState === "finished") {
-        // this.getBalance();
-        return "modal on";
-      } else {
-        return "modal";
-      }
-    }
+    })
   },
   methods: {
     newRound() {
@@ -75,8 +78,6 @@ export default {
 </script>
 
 <style>
-@import url("https://fonts.googleapis.com/css?family=Raleway:100&display=swap");
-
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -85,23 +86,71 @@ export default {
   color: #2c3e50;
   display: flex;
   flex-direction: column;
-  /* margin-top: 60px; */
+}
+.escrow {
+  width: 100%;
+}
+
+.chip {
+  font-size: 20px;
+  line-height: 20px;
+  width: 5rem;
+  height: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  border: 0.7px solid slateblue;
+}
+
+.chip span {
+  font-size: 12px !important;
+}
+.chip div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: 0.7px solid violet;
 }
 
 .btn {
-  background-color: white;
-  border: 1px solid grey;
-  width: 5rem;
-  margin: 0.4rem;
-  border-radius: 10px;
+  border: 0.7px solid #cbd5e0;
+  font-size: 19px;
+  width: 10rem;
+  margin-top: 0.4rem;
+  border-radius: 35px;
   padding: 0.4rem;
   cursor: pointer;
   align-self: center;
+  text-align: center;
+  color: rgba(42, 117, 245, 0.5);
+  border-color: rgba(42, 117, 245, 0.5);
+  background-color: #fff;
+  animation: blink normal 2s infinite ease-in-out;
 }
 
 .btn:hover {
-  background: blue;
-  color: white;
-  font-weight: 700;
+  animation: none;
+  box-shadow: none;
+  background-color: #fff;
+  color: rgba(42, 117, 245, 0.5);
+}
+
+@keyframes blink {
+  0% {
+    box-shadow: 0px 0px 14px 0px rgba(42, 117, 245, 0.5);
+  }
+
+  50% {
+    box-shadow: none;
+  }
+
+  100% {
+    box-shadow: 0px 0px 14px 0px rgba(42, 117, 245, 0.5);
+  }
 }
 </style>

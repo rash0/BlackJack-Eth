@@ -38,7 +38,7 @@ export default {
   },
   computed: {
     cardBorder(cardName){
-      `border: 1px solid ' + ${this.changeColor(cardName)}`
+      return `border: 1px solid ' + ${this.changeColor(cardName)}`
     }
   },
   methods:{
@@ -47,37 +47,37 @@ export default {
         case 'spade':
         case 'clove':
           return  "black;"
-          break;
         case 'diamond':
         case 'heart':
           return "red;"
-          break;
       }
     },
-    rotateCard(){
-      const rand = Math.floor(Math.random() * (5 - 1) + 1)
-      switch(rand){
-        case 1:
-          return 'transform: rotateZ(5deg);'
-          break;
-        case 2:
-          return 'transform: rotateZ(18deg);'
-          break;
-        case 3:
-          return 'transform: rotateZ(-25deg);'
-          break;
-        case 4:
-          return 'transform: rotateZ(-17deg);'
-          break;
-      }
-    }
+    // rotateCard(){
+    //   const rand = Math.floor(Math.random() * (5 - 1) + 1)
+    //   switch(rand){
+    //     case 1:
+    //       return 'transform: rotateZ(5deg);'
+    //       break;
+    //     case 2:
+    //       return 'transform: rotateZ(18deg);'
+    //       break;
+    //     case 3:
+    //       return 'transform: rotateZ(-25deg);'
+    //       break;
+    //     case 4:
+    //       return 'transform: rotateZ(-17deg);'
+    //       break;
+    //   }
+    // }
   }
 }
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css?family=Muli:200|Open+Sans:300&display=swap');
+
 .flip-card {
-  float: left;
+  margin-left: -80px;
   transition: all 1s;
   border:none !important;
   perspective: 1000px; /* Remove this if you don't want the 3D effect */
@@ -86,7 +86,7 @@ export default {
 /* This container is needed to position the front and back side */
 .flip-card-inner {
   position: relative;
-  width: 6.5rem !important;
+  width: 9rem;
   height: 12rem;
   text-align: center;
   transition: transform 0.8s;
@@ -97,6 +97,10 @@ export default {
 /* .flip-card:hover .flip-card-inner {
   transform: rotateY(180deg);
 } */
+
+.flip-card-front{
+  width: 9rem;
+}
 
 /* Position the front and back side */
 .flip-card-front, .flip-card-back {
@@ -120,27 +124,23 @@ export default {
 }
 
 .card {
-  font-family: 'Raleway', sans-serif;
+  font-family: 'Open Sans', sans-serif !important;
+  font-family: 'Muli', sans-serif !important;
   text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  /* color: black; */
   width: 7.5rem !important;
   height: 12rem;
   border-radius: 10px;
-  /* display: inline-block; */
-  /* align-self: center; */
-  /* display: flex; */
   padding: 9px ;
-  /* flex-direction: column; */
-  margin-left: 5px ;
-  margin-right: 5px;
   background-color: white;
   transition: all 250ms;
-  transform: scale(.7)
+  transform: scale(.7);
 }
-.card div {
+/* .card div {
   width: 100%;
-}
+} */
 
 .card-head h4 {
   width: 1.3rem;

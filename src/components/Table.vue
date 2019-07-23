@@ -1,9 +1,11 @@
 <template>
-  <div class="Table-side" :style="tableState">
-    <transition-group  name="card-group" tag="div">
+  <div class="Table-side">
+    <transition-group  class="hand" name="card-group" tag="div">
       <Cards v-for="(card, index) in cardList" :card="card" :isFliped="isCardFliped(index)" :key="index"/>
     </transition-group>
-    <div class="total-points">{{ totalPoints }}</div>
+    <!-- TODO -->
+    <!-- Try to animate it, better than harsh movements -->
+    <div class="total-points" :style="roundResult"><span>{{ totalPoints }}</span></div>
   </div>
 </template>
 
@@ -20,8 +22,11 @@ export default {
     totalPoints(){
       return (this.name === 'houseSide') ? this.$store.state.housePoints : this.$store.state.userPoints
     },
-    tableState(){
-      return this.$store.getters.tableState(this.name)
+    roundResult(){
+      return this.$store.state.gameState !== 'playing' ? 
+        this.$store.getters.roundResult(this.name)
+      :
+        undefined;
     }
   },
   methods:{
@@ -34,16 +39,21 @@ export default {
 }
 </script>
 <style scoped>
-
 .card-group {
   transition: all 0.5s;
 }
 .card-group-enter, .card-group-leave-to {
-  opacity: 0;
-  transform:scale(0);
-  
+  transform: translateX(60px);
 }
-.card-group-enter-to {
+.card-group-leave-to{
+  opacity: 0;
+}
+
+.hand{
+  margin-left: 80px;
+}
+/* .card-group-enter-to {
+  transition: all .8s ease-in;
   opacity: 1;
   transform: scale(1);
 }
@@ -51,32 +61,39 @@ export default {
 .card-group-move {
   opacity: 1;
   transition: all 0.5s;
-}
+} */
 
 .Table-side {
   width: 100%;
   height: 40vh;
+  display: inline-block;
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   transition: all 1s ease-in;
 }
-
-.total-points {
-  align-self:flex-start;
-  margin-top: 4.8rem;
-  margin-left: -6rem;
-  width: 2.2rem;
-  height: 2.2rem;
-  border-radius: 50%;
-  background-color: #51D399;
-  /* color: #a0aec0; */
-  color: white;
-  font-weight: 300;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.Table-side .hand {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: 12rem;
 }
 
+.total-points {
+  width: 1.8rem;
+  height: 2rem;
+  border-radius: 50%;
+/* 
+    box-sizing: initial;
+    box-sizing: content-box; 
+    text-align: center; */
+
+  border: .7px solid #3182ce;
+  color: #3182ce;
+  font-weight: 300;
+  padding: 0rem .1rem 0rem .1rem;
+  line-height: 2rem;
+  transition: all .3s ease-in;
+}
 </style>
