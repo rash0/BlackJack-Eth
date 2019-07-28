@@ -1,35 +1,7 @@
 pragma solidity >= 0.5.0;
 
 contract BlackJack {
-    //     const msgParams = JSON.stringify({
-    //   types: {
-    //     EIP712Domain: [
-    //       { name: "name", type: "string" },
-    //       { name: "version", type: "string" },
-    //       { name: "chainId", type: "uint256" },
-    //       { name: "verifyingContract", type: "address" }
-    //     ],
-    //     Game: [
-    //       { name: "House_Address", type: "address" },
-    //       { name: "Player_Address", type: "address" },
-    //       { name: "Escrow_in_ETH", type: "uint256" },
-    //       { name: "Round_bet_Amount", type: "string" },
-    //     ]
-    //   },
-    //   primaryType: "Game",
-    //   domain: {
-    //     name: "ELJoker",
-    //     version: "1",
-    //     chainId: '1',
-    //     verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
-    //   },
-    //   message: {
-    //     House_Address:"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826",
-    //     Player_Address: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
-    //     Escrow_in_ETH: 50,
-    //     Round_bet_Amount: 1
-    //   }
-    // });
+
     struct Round{
         uint housePoints;
         uint playerPoints;

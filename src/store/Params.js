@@ -7,17 +7,17 @@ export const Params = {
         { name: "verifyingContract", type: "address" }
       ],
       Game: [
-        { name: "HouseAddress", type: "address" },
-        { name: "PlayerAddress", type: "address" },
+        { name: "houseAddress", type: "address" },
+        { name: "playerAddress", type: "address" },
         { name: "Escrow_in_ETH", type: "uint256" },
-        { name: "CurrentBet_in_ETH", type: "uint256" },
+        { name: "currentBet_in_ETH", type: "uint256" },
         { name: "Rounds", type: "Round" }
       ],
       Round: [
-        { name: "House", type: "string" },
-        { name: "Player", type: "string" },
-        { name: "Winner_Side", type: "uint256" },
-        { name: "BetAmount_in_WEI", type: "uint256" },
+        { name: "house", type: "string" },
+        { name: "player", type: "string" },
+        { name: "winner_Side", type: "uint256" },
+        { name: "betAmount_in_WEI", type: "uint256" },
       ]
     },
     primaryType: "Game",
@@ -28,16 +28,17 @@ export const Params = {
       verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
     },
     message: {
-      HouseAddress: '',
-      PlayerAddress: '',
+      houseAddress: '',
+      playerAddress: '',
       Escrow_in_WEI: undefined,
-      CurrentBet_in_WEI: undefined,
-      Rounds: [
+      currentBalance_in_WEI: undefined,
+      currentBetAmount_in_WEI: undefined,
+      Rounds: [ // used as a detailed nounce/sequence for the player history
         {
-          House: '',
-          Player: '',
-          Winner_Side: undefined,
-          BetAmount_in_WEI:undefined
+          house: '',
+          player: '',
+          winner_Side: undefined,
+          betAmount_in_WEI:undefined
         }
       ]
     }

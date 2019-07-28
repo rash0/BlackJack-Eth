@@ -13,7 +13,6 @@ function sumPoints(state) {
         points += 10;
         break;
       case "A":
-        points += 1;
         ace += 1;
         break;
       default:
@@ -23,9 +22,9 @@ function sumPoints(state) {
   }
 
   // only Add 10 when there is one ace in hand
-  if (ace === 1 && points < 12) {
-    points += 10;
-  }
+  if (ace === 1) points <= 11 ? points += 11 : points += 1;
+  // if there is more than one in hand, add their count
+  if (ace > 1) points += ace
 
   return points;
 }

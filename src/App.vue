@@ -4,18 +4,18 @@
     <Table :cardList="houseCards" :name="'houseSide'" />
     <Table :cardList="userCards" :name="'userSide'" />
     <Controls v-if="this.gameState === 'playing'" />
-    <div class="escrow">
+    <!-- <div class="escrow">
       <div class="chip">
         <div>
           0.1
           <span>ETH</span>
         </div>
       </div>
-    </div>
+    </div> -->
     <!-- TODO -->
     <!-- This button glows green slowely but beauful, it make you awant to press on -->
     <input class="btn" @click="newRound" v-if="this.gameState === 'finished'" v-model="betAmount" />
-    <ConfigSteps />
+    <!-- <ConfigSteps /> -->
   </div>
 </template>
 
@@ -37,13 +37,16 @@ import { signMessage, verifyMessage, getAccountBalance } from "./helper.js";
 export default {
   name: "app",
   components: {
-    Table,Controls,HeadBar, ConfigSteps
+    Table,
+    Controls,
+    HeadBar,
+    ConfigSteps
   },
   data() {
     return {
       provider: null,
       account: null,
-      betAmount: 0
+      betAmount: undefined
     };
   },
   beforeCreate() {},
@@ -56,11 +59,7 @@ export default {
   // console.log(recoveredAddress)
 
   // },
-  created() {
-    if (this.$store.state.houseCards.length === 0) {
-      // this.$store.dispatch("startTheGame");)
-    }
-  },
+  created() {this.$store.dispatch("startTheGame")},
   computed: {
     ...mapState({
       houseCards: "houseCards",

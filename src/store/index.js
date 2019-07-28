@@ -19,9 +19,8 @@ export default new Vuex.Store({
     isControlsDisabled: false,
     houseTurn: false,
     gameState: "playing", // 'finished',
-    houseAddress: null,
-    msgParams: Params,
-    web3: {}
+    Escrow: 0,
+    msgParams: Params
   },
   getters: {
     roundResult: state => sideName => {
@@ -50,23 +49,22 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    // init web3
-    getWeb3Instance(state, web3) {
-      state.web3 = web3;
-    },
     // game
     createDeck(state) {
-      const cards = [2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", "A"];
-      const cardType = ["spade", "diamond", "heart", "clove"];
+      const cards = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'];
+      const cardType = ['spade', 'diamond', 'heart', 'clove'];
       // Create a deck
       const deck = [];
-      for (let card in cards) {
-        for (let type in cardType) {
-          let ca = {
-            name: cardType[type],
-            num: cards[card]
-          };
-          deck.push(ca);
+      // how many card deck to play with
+      for (var i = 0; i < 5; i++){
+        for (let card in cards) {
+          for (let type in cardType) {
+            let ca = {
+              name: cardType[type],
+              num: cards[card]
+            };
+            deck.push(ca);
+          }
         }
       }
       state.fullDeck = deck;
@@ -117,18 +115,8 @@ export default new Vuex.Store({
       }
     },
     userNewCard(state) {
-      // TODO //
-      // make sure to allow only one card withdrawl at time,
-      // wait till the card touch the table and can click again
-      if (state.userPoints < 21) {
-        state.userCards.push(state.fullDeck.pop());
-        state.userPoints = sumPoints(state.userCards);
-      }
-      if (state.userPoints > 21 || state.userPoints === 21) {
-        state.houseTurn = true;
-        state.isControlsDisabled = true;
-        state.gameState = "finished";
-      }
+      state.userCards.push(state.fullDeck.pop());
+      state.userPoints = sumPoints(state.userCards);
     },
     // stand button
     standButton(state) {
@@ -151,6 +139,7 @@ export default new Vuex.Store({
       state.isControlsDisabled = false;
       state.houseTurn = false;
     },
+    // remove cards from table
     removeCardOneByOne(state) {
       var tmr = setInterval(() => {
         if (state.houseCards.length != 0) {
@@ -162,21 +151,23 @@ export default new Vuex.Store({
         }
       }, 80);
     },
-    fetchAddress(state, address) {
-      state.houseAddress = address;
-    },
     // message state paramaters
     // only called once in the first of the game
     initGameState(state, HouseAddress, PlayerAddress, EscrowInWEI) {
       var base = state.msgParams.message;
-      base.HouseAddress = HouseAddress;
-      base.PlayerAddress = PlayerAddress;
+      base.houseAddress = HouseAddress;
+      base.playerAddress = PlayerAddress;
       base.Escrow_in_WEI = web3.utils.toWei(EscrowInWEI.toString(), "ether");
     },
     // called everytime a new Bet is made
     currentBetState(state, currentBetAmount) {
+      // TODO //
+      // For the currentBalance_in_WEI paramter, it will be calculated after the game
+      // but the currentBetAmount_in_WEI paramter will be inputed before the game start
+      // In general, usually the signing will happen after the round finishes,
+      // but the question is 'what if the user doesnt want to sign ??'
       var base = state.msgParams.message;
-      base.CurrentBet_in_WEI = web3.utils.toWei(
+      base.currentBetAmount_in_WEI = web3.utils.toWei(
         currentBetAmount.toString(),
         "ether"
       );
@@ -227,9 +218,20 @@ export default new Vuex.Store({
         }, 1300);
       });
     },
+    // user withdraw card
     withdrawCard(context) {
-      context.commit("userNewCard");
+      // TODO //
+      // make sure to allow only one card withdrawl at time,
+      // wait till the card touch the table and can click again
+      if (context.state.userPoints < 21) {
+        context.commit('userNewCard')
+      }
+      if (context.state.userPoints > 21 || context.state.userPoints === 21) {
+        context.commit('standButton')
+        context.state.gameState = "finished";
+      }
     },
+    // supposdly fetch all the first requests from server
     allFetch(context) {
       request("http://localhost:7070/init", (err, res, body) =>
         // eslint-disable-next-line
