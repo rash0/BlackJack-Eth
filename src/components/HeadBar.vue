@@ -1,19 +1,21 @@
 <template>
   <div class="Header">
-    <img src="../assets/logo.svg" width="50" />
+    <img src="../assets/logo.svg" width="35" />
     <div class="details">
       <NetworkStatus />
-      <div class="account-amount">0.5 ETH</div>
+      <Wallet />
     </div>
   </div>
 </template>
 
 <script>
 import NetworkStatus from "./NetworkStatus";
+import Wallet from "./Wallet";
 
 export default {
   components: {
-    NetworkStatus
+    NetworkStatus,
+    Wallet
   }
 };
 </script>
@@ -31,10 +33,4 @@ export default {
   justify-content: space-between;
 }
 
-.account-amount {
-  align-self: center;
-  margin-left: 1rem;
-  font-size: 13px;
-  font-weight: 300;
-}
 </style>

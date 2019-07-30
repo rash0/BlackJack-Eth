@@ -1,5 +1,5 @@
 <template>
-  <div class="modal" :style="modalState ? 'transform: translateX(0rem)': 'transform: translateX(-43rem)'">
+  <div class="modal" :style="modalState ? 'transform: translateX(0rem)': 'transform: translateX(-100rem)'">
     <div class="modal-content">
       <span class="progress-bar" :style="progressBar" />
       <transition name="fade" mode="out-in">

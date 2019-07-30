@@ -7,7 +7,7 @@
     <!-- <div class="escrow">
       <div class="chip">
         <div>
-          0.1
+          0.001
           <span>ETH</span>
         </div>
       </div>
@@ -91,7 +91,7 @@ export default {
 }
 
 .chip {
-  font-size: 20px;
+  font-size: 16px;
   line-height: 20px;
   width: 5rem;
   height: 5rem;

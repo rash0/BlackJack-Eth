@@ -17,9 +17,11 @@ export default {
   },
   methods:{
     hitButton(){
-      this.$store.dispatch('withdrawCard')
+      this.$store.dispatch('hitButton')
     },
-    doubleButton(){},
+    doubleButton(){
+      this.$store.dispatch('doubleBetButton')
+    },
     splitButton(){},
     standButton(){
       this.$store.dispatch('houseTurn')
