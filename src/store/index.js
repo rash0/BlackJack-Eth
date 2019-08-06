@@ -11,19 +11,45 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    fullDeck: [],
+    fullDeck: [
+      { type: "clove", num: 2 },
+      { type: "clove", num: 2 },
+      { type: "clove", num: 2 },
+      { type: "clove", num: 2 },
+      { type: "clove", num: 2 },
+      { type: "clove", num: 2 },
+      { type: "clove", num: 2 },
+      { type: "clove", num: 2 },
+      { type: "clove", num: 2 }
+    ],
     houseCards: [],
+    // th user hand data should be like this
+    playerHand: [ 
+      {
+        cards: [],
+        isActive: true,
+        isStand: false, // bool, if the player split hands this shows one of them is active
+        bet: 0,
+        points: 0, // the sum of total points of cards
+        isBetDoubleDown: false
+      }
+    ],
     housePoints: 0,
-    userPoints: 0,
-    userCards: [],
     isBetDoubleDown: false, // double button
-    isControlsDisabled: false,
+    isCardSplit: false, // changes on pressing 'split' button
+    isControlsDisabled: {
+      hit: false,
+      stand: false,
+      double: false,
+      split: true
+    },
     houseTurn: false,
     gameState: "playing", // 'finished',
     Escrow: 0,
     msgParams: Params
   },
   getters: {
+    // not working
     roundResult: state => sideName => {
       var points =
         sideName === "houseSide" ? state.housePoints : state.userPoints;
@@ -61,7 +87,7 @@ export default new Vuex.Store({
         for (let card in cards) {
           for (let type in cardType) {
             let ca = {
-              name: cardType[type],
+              type: cardType[type],
               num: cards[card]
             };
             deck.push(ca);
@@ -85,26 +111,62 @@ export default new Vuex.Store({
         array[i] = t;
       }
       state.fullDeck = array;
-      // var deck = state.fullDeck;
-      // for (var i = 0; i < 1000; i++) {
-      //   var location1 = Math.floor(Math.random() * deck.length);
-      //   var location2 = Math.floor(Math.random() * deck.length);
-      //   var tmp = deck[location1];
-
-      //   deck[location1] = deck[location2];
-      //   deck[location2] = tmp;
-      // }
-      // state.fullDeck = deck;
     },
-    userNewCard(state) {
-      state.userCards.push(state.fullDeck.pop());
-      state.userPoints = sumPoints(state.userCards);
+    PlayerNewCard(state) {
+      var currentHandIndex = state.playerHand[0].isActive ? 0 : 1;
+      state.playerHand[currentHandIndex].cards.push(state.fullDeck.pop());
+      state.playerHand[currentHandIndex].points = sumPoints(
+        state.playerHand[currentHandIndex].cards
+      );
     },
-    // stand button
-    standButton(state) {
-      state.houseTurn = true;
-      state.isControlsDisabled = true;
-      state.housePoints = sumPoints(state.houseCards);
+    // controls
+    stand(state) {
+      if(state.isCardSplit === true){
+        if(state.playerHand[0].isActive === true) {
+          state.playerHand[0].isStand = true;
+          state.playerHand[0].isActive = false;
+          state.playerHand[1].isActive = true
+        }
+        // if(state.playerHand[1].isActive === true) {
+        //   state.playerHand[1].isStand = true;
+        //   state.playerHand[1].isActive = false;
+        // }
+      }
+      // TODO //
+      // stand button have to change, if the player split then
+      // its not the house turn, but the other hand of the player
+      // but for now will do it like this
+      // state.playerHand[0].isStand = true;
+      // state.houseTurn = true;
+      // state.isControlsDisabled = {
+      //   hit: true,
+      //   stand: true,
+      //   double: true,
+      //   split: true
+      // };
+      // state.housePoints = sumPoints(state.houseCards);
+    },
+    splitButton(state) {
+      state.isCardSplit = true;
+      // extract the last/second card from the card array
+      const cardSet2 = state.playerHand[0].cards.splice(1);
+      // init a second hand object
+      state.playerHand.push({
+          cards: [],
+          isActive: false,
+          isStand: false,
+          bet: 0,
+          points: 0,
+          isBetDoubleDown: false
+      });
+      // push the extracted second card to the second hand
+      state.playerHand[1].cards.push(cardSet2[0]);
+      // sum the count of the two arrays, maybe loop instead of repaet code
+      state.playerHand[0].points = sumPoints(state.playerHand[0].cards);
+      state.playerHand[1].points = sumPoints(state.playerHand[1].cards);
+      // copy the bet
+      state.playerHand[1].bet = state.playerHand[0].bet;
+      // console.log(state.playerHand[1].cards)
     },
     houseNewCard(state) {
       state.houseCards.push(state.fullDeck.pop());
@@ -121,24 +183,36 @@ export default new Vuex.Store({
     },
     resetRound(state) {
       state.houseCards = [];
-      state.userCards = [];
+      state.playerHand = [
+        {
+          cards: [],
+          isActive: true,
+          isStand: false,
+          bet: 0,
+          points: 0,
+          isBetDoubleDown: false
+        }
+      ];
       state.housePoints = 0;
-      state.userPoints = 0;
-      state.isBetDoubleDown = false
-      state.isControlsDisabled = false;
+      // state.isBetDoubleDown = false;
+      state.isControlsDisabled = {
+        hit: false,
+        stand: false,
+        double: false,
+        split: true
+      };
       state.houseTurn = false;
     },
     // remove cards from table
     removeCardOneByOne(state) {
-      var tmr = setInterval(() => {
-        if (state.houseCards.length != 0) {
-          state.houseCards.pop();
-        } else if (state.userCards.length != 0) {
-          state.userCards.pop();
-        } else {
-          clearInterval(tmr);
-        }
-      }, 80);
+      if (state.houseCards.length != 0) {
+        state.houseCards.pop();
+      } else if (state.playerHand[0].cards.length != 0) {
+        state.playerHand[0].cards.pop();
+        state.playerHand[1].cards.pop();
+      } else if (state.playerHand[1].cards.length != 0) {
+        state.playerHand[1].cards.pop();
+      }
     },
     // message state paramaters
     // only called once in the first of the game
@@ -169,89 +243,133 @@ export default new Vuex.Store({
       // calculate the winner side based on the result
       // base.Winner_Side
       base.BetAmount_in_WEI = base.CurrentBet_in_WEI;
-    },
-    sendSignaure(state) {}
+    }
   },
-
   actions: {
-    startTheGame(context) {
-      context.commit("createDeck");
-      context.commit("shuffleDeck");
-      setTimeout(() => context.dispatch("distrubateCard"), 1300);
+    startTheGame({ commit, dispatch }) {
+      // commit("createDeck");
+      // commit("shuffleDeck");
+      setTimeout(() => dispatch("distrubateCard"), 1300);
     },
-    distrubateCard(context) {
+    distrubateCard({ commit, state }) {
       for (var i = 0; i < 4; i++) {
         if (i % 2 === 0) {
           setTimeout(() => {
-            context.commit("houseNewCard");
+            commit("houseNewCard");
           }, i * 400);
         }
         if (i % 2 !== 0) {
           setTimeout(() => {
-            context.commit("userNewCard");
-            if (context.state.userPoints === 21) {
-              context.commit("standButton");
-              context.state.gameState = "finished";
+            commit("PlayerNewCard");
+            if (state.playerHand[0].points === 21) {
+              commit("stand");
+              state.gameState = "finished";
+            }
+            // turn on the split button if the two cards are same
+            // probably take this function outisde by itself as check after
+            // distruybiting
+            if (
+              state.playerHand[0].cards.length > 1 &&
+              state.playerHand[0].cards[0].num ===
+                state.playerHand[0].cards[1].num
+            ) {
+              state.isControlsDisabled.split = false;
             }
           }, i * 400);
         }
       }
     },
-    houseTurn(context) {
-      context.commit("standButton");
+    houseTurn({ commit, state }) {
+      commit("stand");
       var tmr = setInterval(() => {
-        if (context.state.housePoints <= 17) {
-          context.commit("houseNewCard");
-        } else if (context.state.userPoints > 21) {
-          context.state.gameState = "finished";
-          clearInterval(tmr);
-        }else {
-          context.state.gameState = "finished";
+        if (state.housePoints < 17) {
+          commit("houseNewCard");
+          // } else if (
+          //   state.playerHand[] > 21 ||
+          //   context.state.housePoints > context.state.userPoints
+          // ) {
+          //   context.state.gameState = "finished";
+          //   clearInterval(tmr);
+        } else {
+          state.gameState = "finished";
           clearInterval(tmr);
         }
       }, 1200);
     },
-    removeCards({ commit }) {
-      return new Promise(resolve => {
-        setTimeout(() => {
+    removeCards({ commit, state }) {
+      // maybe need a promise here
+      var tmr = setInterval(() => {
+        var totalCardsOnTable =
+          state.playerHand[0].cards.length +
+          (state.playerHand[1].cards.length || 0) +
+          state.houseCards.length;
+
+        if (totalCardsOnTable === 0) {
+          clearInterval(tmr);
+        } else {
           commit("removeCardOneByOne");
-          resolve();
-        }, 700);
-      });
+        }
+      }, 130);
     },
-    newRound(context) {
-      context.commit("changeGameState");
-      context.state.isBetDoubleDown = false
-      context.dispatch("removeCards").then(() => {
-        setTimeout(() => {
-          context.commit("resetRound");
-          context.dispatch("distrubateCard");
-        }, 1300);
-      });
+    newRound({ commit, state, dispatch }) {
+      commit("changeGameState");
+      state.isBetDoubleDown = false;
+      dispatch("removeCards");
+      //.then(() => {
+      setTimeout(() => {
+        commit("resetRound");
+        dispatch("distrubateCard");
+      }, 1300);
+      // });
     },
     // controls
-    hitButton(context) {
+    hitButton({ commit, state }) {
+      // {
+      //   cards: [],
+      //   isActive: true,
+      //   isStand: false,
+      //   bet: 0,
+      //   points: 0,
+      //   isBetDoubleDown: false
+      // }
+
       // TODO //
       // make sure to allow only one card withdrawl at time,
       // wait till the card touch the table and can click again
-      if (context.state.userPoints < 21) {
-        context.commit("userNewCard");
+      var currentPlayerHand = state.playerHand[0].isActive
+        ? state.playerHand[0]
+        : state.playerHand[1];
+
+      if (currentPlayerHand.points < 21) {
+        commit("PlayerNewCard");
       }
-      if (context.state.userPoints > 21 || context.state.userPoints === 21) {
-        context.commit("standButton");
-        context.state.gameState = "finished";
+      if (currentPlayerHand.points > 21 || currentPlayerHand.points === 21) {
+        commit("stand");
+        state.gameState = "finished";
       }
     },
-    doubleBetButton(context) {
+    standButton(context) {
+      // when pressed:
+
+      // if PRESSED when the active hand is the first split
+      // then shift to the second hand
+
+      // if PRESSED wehn the active hand is the second split
+      // then pass the turn to the house to play
+
+      // if PRESSED without split
+      // then pass the turn to the house to play 
+    },
+    doubleBetButton({ commit, state, dispatch }) {
       // Should double the bet first, then
       // withdraw on card only, then
-      context.commit("userNewCard");
-      context.state.isBetDoubleDown = true
+      commit("PlayerNewCard");
+      state.isBetDoubleDown = true;
       // disable controls and turn to house to play
       setTimeout(() => {
-        context.commit("standButton");
+        commit("stand");
         // context.state.gameState = "finished";
-        context.dispatch("houseTurn");
+        dispatch("houseTurn");
       }, 700);
     },
     // supposdly fetch all the first requests from server

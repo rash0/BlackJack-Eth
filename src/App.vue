@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <HeadBar />
-    <Table :cardList="houseCards" :name="'houseSide'" />
-    <Table :cardList="userCards" :name="'userSide'" />
+    <Table />
+    <!-- <Table :name="'userSide'" /> -->
     <Controls v-if="this.gameState === 'playing'" />
     <!-- <div class="escrow">
       <div class="chip">
@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       provider: null,
-      account: null,
+      hands: [],
       betAmount: undefined
     };
   },
@@ -61,12 +61,7 @@ export default {
   // },
   created() {this.$store.dispatch("startTheGame")},
   computed: {
-    ...mapState({
-      houseCards: "houseCards",
-      userCards: "userCards",
-      gameState: "gameState",
-      isControlsDisabled: "isControlsDisabled"
-    })
+    ...mapState(["gameState"])
   },
   methods: {
     newRound() {

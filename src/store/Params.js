@@ -38,7 +38,7 @@ export const Params = {
           house: '',
           player: '',
           winner_Side: undefined,
-          betAmount_in_WEI:undefined
+          betAmount_in_WEI:undefined // user bet Amount only
         }
       ]
     }

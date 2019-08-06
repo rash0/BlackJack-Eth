@@ -1,28 +1,27 @@
 <template>
   <!-- TODO add more card animation in and out -->
+  <!--  -->
+  <!-- :style="splitCards" -->
   <div class="flip-card">
-    <div class="flip-card-inner" :style="cardOrientation">
+    <div class="flip-card-inner" :class="cardOrientation">
       <div class="flip-card-front">
-        <div
-          class="card"
-          :style="!isFliped ? `border: 1px solid ${changeColor(card.name)};color:${changeColor(card.name)}` : 'transform: scale(.1);'"
-        >
+        <div class="card" :class="cardColors">
           <div class="card-head">
             <h4>{{card.num}}</h4>
-            <Shapes class="smallShape" :cardName="card.name" size="30px" width="21px" />
+            <Shapes class="smallShape" :cardName="card.type" size="30" width="21" />
           </div>
           <div v-if="card.num !== 'A'" class="card-body">
-            <Shapes class="bigShape" :cardName="card.name" size="19px" width="40px" />
+            <Shapes class="bigShape" :cardName="card.type" size="19" width="40" />
             <p>{{card.num}}</p>
-            <Shapes class="bigShape" :cardName="card.name" size="19px" width="40px" />
+            <Shapes class="bigShape" :cardName="card.type" size="19" width="40" />
           </div>
           <div v-else class="card-body">
             <Shapes
               class="bigShape"
-              :cardName="card.name"
+              :cardName="card.type"
               style="margin-top: 70px !important;"
-              size="12px"
-              width="100px"
+              size="12"
+              width="100"
             />
           </div>
         </div>
@@ -38,57 +37,77 @@
 
 <script>
 import Shapes from "./Shapes";
+import { mapState } from "vuex";
+import { setTimeout } from "timers";
 
 export default {
   name: "Card",
-  props: ["card", "cardIndex", "name"],
+  props: {
+    card: {
+      type: Object,
+      required: true
+    },
+    cardIndex: {
+      type: Number,
+      required: true
+    },
+    name: {
+      type: String,
+      required: true
+    }
+  },
   components: {
     Shapes
   },
   computed: {
+    ...mapState({
+      isCardSplit: "isCardSplit",
+      playerHand: "playerhand",
+      isControlsDisabled: "isControlsDisabled"
+    }),
     isFliped() {
       var houseTurn = this.$store.state.houseTurn;
-      if (this.cardIndex === 1 && this.name === "houseSide" && !houseTurn) return true;
+      if (this.cardIndex === 1 && this.name === "houseSide" && !houseTurn)
+        return true;
       return false;
     },
-    cardBorder(cardName) {
-      return `border: 1px solid ' + ${this.changeColor(cardName)}`;
-    },
     cardOrientation() {
-      var double = this.$store.state.isBetDoubleDown;
-      var arrLen = this.$store.state.userCards.length - 1;
+      var c = [];
+      // var double = this.$store.state.isBetDoubleDown;
+      // var currentHand = this.playerHand[0].isActive? this.playerHand[0].cards : this.playerHand[1].cards
+      // var arrLen = currentHand.length - 1;
       // flip card if house and second card in hand
-      if (this.isFliped) return "transform: rotateY(180deg);";
+      if (this.isFliped) c.push("is-fliped");
       // if double down and user side and last card in hand, then rotate card to 90 deg
-      if (double && this.cardIndex === arrLen && this.name === 'userSide') return 'transform: rotateZ(-90deg);';
-    }
-  },
-  methods: {
-    changeColor(type) {
-      switch (type) {
-        case "spade":
-        case "clove":
-          return "black;";
-        case "diamond":
-        case "heart":
-          return "red;";
+      // if (double && this.cardIndex === arrLen && this.name === "userSide")
+      //   c.push("is-doubled");
+      return c;
+    },
+    cardColors() {
+      var c = [];
+      if (!this.isFliped) {
+        switch (this.card.type) {
+          case "spade":
+          case "clove":
+            c.push("card-colors-black");
+          case "diamond":
+          case "heart":
+            c.push("card-colors-red");
+        }
+        return c;
       }
+      c.push("card-is-fliped");
+      return c;
     }
-    // rotateCard(){
-    //   const rand = Math.floor(Math.random() * (5 - 1) + 1)
-    //   switch(rand){
-    //     case 1:
-    //       return 'transform: rotateZ(5deg);'
-    //       break;
-    //     case 2:
-    //       return 'transform: rotateZ(18deg);'
-    //       break;
-    //     case 3:
-    //       return 'transform: rotateZ(-25deg);'
-    //       break;
-    //     case 4:
-    //       return 'transform: rotateZ(-17deg);'
-    //       break;
+    // splitCards() {
+    //   if (
+    //     !this.isControlsDisabled.split &&
+    //     this.name === "userSide" &&
+    //     this.isCardSplit
+    //   ) {
+    //     return this.cardIndex === 0
+    //       ? "margin-left: -14vh !important;"
+    //       : "margin-left: 16vh !important;";
     //   }
     // }
   }
@@ -98,6 +117,7 @@ export default {
 <style>
 /* @import url('https://fonts.googleapis.com/css?family=Muli:200|Open+Sans:300&display=swap'); */
 @import url("https://fonts.googleapis.com/css?family=Montserrat:300,600&display=swap");
+
 .flip-card {
   margin-left: -80px;
   transition: all 1s;
@@ -114,11 +134,12 @@ export default {
   transition: transform 0.8s;
   transform-style: preserve-3d;
 }
-
-/* Do an horizontal flip when you move the mouse over the flip box container */
-/* .flip-card:hover .flip-card-inner {
+.flip-card-inner.is-fliped {
   transform: rotateY(180deg);
-} */
+}
+.flip-card-inner.is-doubled {
+  transform: rotateZ(-90deg);
+}
 
 .flip-card-front {
   width: 9rem;
@@ -146,12 +167,6 @@ export default {
   border-color: black;
 }
 
-/* margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; */
 .card {
   font-family: "Montserrat", "Open Sans", "Muli", sans-serif;
   /* font-family: 'Open Sans', sans-serif !important;
@@ -170,10 +185,20 @@ export default {
   transition: all 250ms;
   transform: scale(0.7);
 }
-/* .card div {
-  width: 100%;
-} */
 
+.card.card-is-fliped {
+  transform: scale(0.7) rotateY(180deg) rotate(-7deg);
+}
+
+.card-colors-black {
+  border: 1px solid black !important;
+  color: black !important;
+}
+
+.card.card-colors-red {
+  border: 1px solid red;
+  color: red;
+}
 .card-head h4 {
   width: 1.3rem;
   margin: 0px;

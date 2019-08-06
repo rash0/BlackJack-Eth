@@ -1,9 +1,9 @@
 <template>
   <div class="controls" >
-    <button :disabled="isDisabled" @click="doubleButton">Double</button>
-    <button :disabled="isDisabled" @click="splitButton">Split</button>
-    <button :disabled="isDisabled" @click="standButton">Stand</button>
-    <button :disabled="isDisabled" @click="hitButton">Hit</button>
+    <button :disabled="isDisabled.double" @click="doubleButton">Double</button>
+    <button :disabled="isDisabled.split" @click="splitButton">Split</button>
+    <button :disabled="isDisabled.stand" @click="standButton">Stand</button>
+    <button :disabled="isDisabled.hit" @click="hitButton">Hit</button>
   </div>
 </template>
 
@@ -22,7 +22,9 @@ export default {
     doubleButton(){
       this.$store.dispatch('doubleBetButton')
     },
-    splitButton(){},
+    splitButton(){
+      this.$store.commit('splitButton')
+    },
     standButton(){
       this.$store.dispatch('houseTurn')
     }
